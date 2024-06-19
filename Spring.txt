@@ -1,0 +1,41 @@
+Spring
+
+Concepts
+
+Designed by Rod Johnson.
+
+Inversion of Control
+
+This is the principle of object-oriented programming, in which objects of the program do not depend on concrete implementations of other objects, 
+but may have knowledge about their abstractions (interfaces) for later interaction.
+
+Dependency Injection
+
+is a composition of structural design patterns, in which for each function of the application there is one, a conditionally independent object 
+(service) that can have the need to use other objects (dependencies) known to it by interfaces. Dependencies are transferred (implemented) to 
+the service at the time of its creation. This is a situation where we introduce an element of one class into another.
+
+Aspect Oriented programming
+
+a programming paradigm that allows you to distinguish cross-through (functional) functionality in application. These functions, which span 
+multiple application nodes, are called cross-cutting concerns and these cross-cutting notes are separated from the immediate business logic 
+of the application. In OOP, the key unit is the class, while in AOP, the key element is the aspect. DI helps to separate application classes
+ into separate modules, and AOP helps to separate cross-cutting concerns from the objects they affect.
+
+
+Spring Framework: Core Components
+
+The Core container from Spring consists of four modules: SpEL , Context, Core, Beans. Description for these elements are as follows:
+
+The SpEL module provides a powerful expression language for manipulating objects during execution.
+Context is built on the basis of Beans and Core and allows you to access any object that is defined in the settings. The key element of the Context module is the ApplicationContext interface.
+The Core module provides key parts of the framework including IoC and DI properties.
+The Bean module is responsible for creating and managing Spring Beans - is application context structure unit.
+
+Spring Framework Web
+Spring framework Web layer consists of Web, Web-MVC, Web-Socket, Web-Portlet etc.
+
+The Web module provides functions such as downloading files, creating web application, rest web service etc.
+Web-MVC contains a Spring MVC implementation for web applications.
+Web-Socket provides support for communication between the client and the server, using Web-Sockets in web applications.
+Web-Portlet provides MVC implementation with portlet environment
