@@ -25,7 +25,7 @@ public class CyclicBarrierDemo {
                 new Thread(task).start();
             }
             System.out.println("all threads waiting to start: iteration " + i);
-            sleep(1);
+            Thread.sleep(1);
             entryBarrier.await();
             System.out.println("all threads started: iteration " + i);
             exitBarrier.await();
@@ -56,7 +56,7 @@ public class CyclicBarrierDemo {
 
         private void work() throws InterruptedException {
             System.out.println("work " + delay + " started");
-            sleep(delay);
+            Thread.sleep(delay);
             System.out.println("work " + delay + " finished");
         }
     }

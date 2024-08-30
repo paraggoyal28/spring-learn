@@ -1,4 +1,3 @@
-package org.example.collection.comparableAndComparator;
 
 import java.util.ArrayList;
 import java.util.Collections;

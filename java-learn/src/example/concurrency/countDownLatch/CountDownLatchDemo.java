@@ -20,7 +20,7 @@ public class CountDownLatchDemo {
 
 
             System.out.println("all threads waiting to start");
-            sleep(1);
+            Thread.sleep(1);
 
             entryBarrier.countDown();
             System.out.println("all threads started");
@@ -55,7 +55,7 @@ public class CountDownLatchDemo {
 
         private void work() throws InterruptedException {
             System.out.println("Work " + delay + " started");
-            sleep(delay);
+            Thread.sleep(delay);
             System.out.println("Work " + delay + " finished");
         }
     }

@@ -15,11 +15,11 @@ public class PhaserDemo3 {
             new Thread(task).start();
         }
         System.out.println("all threads waiting to start " + phaser);
-        sleep(1);
+        Thread.sleep(1);
         System.out.println("before all threads started " + phaser);
         phaser.arriveAndDeregister();
         System.out.println("after all threads started " + phaser);
-        sleep(10);
+        Thread.sleep(10);
         System.out.println("all threads finished "+ phaser);
     }
     private static class Worker implements Runnable {
@@ -41,7 +41,7 @@ public class PhaserDemo3 {
         }
         private void work() throws InterruptedException {
             System.out.println("work {} started " +  delay);
-            sleep(delay);
+            Thread.sleep(delay);
             System.out.println("work {} finished " + delay);
         }
     }

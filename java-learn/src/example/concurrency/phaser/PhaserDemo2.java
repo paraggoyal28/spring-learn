@@ -4,21 +4,12 @@ import java.util.concurrent.Phaser;
 
 import static java.lang.Thread.sleep;
 
-public class PhaserDemo {
+public class PhaserDemo2 {
     private static final int PARTIES = 3;
-    private static final int ITERATIONS = 3;
 
     public static void main(String[] args) throws InterruptedException {
-        Phaser phaser = new Phaser(1) {
-            final private int maxPhase = ITERATIONS;
-
-            @Override
-            protected boolean onAdvance(int phase, int registeredParties) {
-                return (phase >= maxPhase - 1) || (registeredParties == 0);
-            }
-        };
-        System.out.println("after constructor " + phaser);
-
+        Phaser phaser = new Phaser(1);
+        System.out.println("After construction " + phaser);
         for(int p = 0; p < PARTIES; ++p) {
             int delay = p + 1;
             Runnable task = new Worker(delay, phaser);
@@ -26,7 +17,7 @@ public class PhaserDemo {
         }
 
         System.out.println("all threads waiting to start " + phaser);
-        sleep(1);
+        Thread.sleep(1);
 
         System.out.println("before all threads started " + phaser);
         phaser.arriveAndDeregister();
@@ -35,9 +26,10 @@ public class PhaserDemo {
         phaser.register();
         while(!phaser.isTerminated()) {
             phaser.arriveAndAwaitAdvance();
+            phaser.arriveAndDeregister();
         }
 
-        System.out.println("all threads finished " + phaser);
+        System.out.println("all threads finished  " + phaser);
     }
 
     private static class Worker implements Runnable {
@@ -52,19 +44,18 @@ public class PhaserDemo {
 
         @Override
         public void run() {
-            do {
-                try {
-                    work();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                phaser.arriveAndAwaitAdvance();
-            } while(!phaser.isTerminated());
+            phaser.arriveAndAwaitAdvance();
+            try {
+                work();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            phaser.arriveAndDeregister();
         }
 
         private void work() throws InterruptedException {
             System.out.println("work " + delay + " started");
-            sleep(delay);
+            Thread.sleep(delay);
             System.out.println("work " + delay + " finished");
         }
     }
