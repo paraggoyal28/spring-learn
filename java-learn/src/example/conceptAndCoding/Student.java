@@ -1,23 +1,15 @@
 public class Student {
     public static void main(String[] args) {
-        String s1 = "hello";
-        String s2 = "hello";
-        String s3 = new String("hello");
-
-        System.out.println(s1.equals(s2));
-        System.out.println(s1.equals(s3));
-        System.out.println(s1 == s3);
-
-        int a = 10;
-        Integer a1 = a;
-        modifyInt(a);
-        System.out.println(a);
-        modifyInt(b);
-        System.out.println(b);
+        int ans = add("Hello", 1, 2, 3, 4);
+        System.out.println("Answer is " + ans);
     }
 
-    private static void modify(Employee employee){
-        employee.employeeId = 20;
+    private static int add(String name, int ...variables){
+        int ans = 0;
+        for(int var: variables) {
+            ans += var;
+        }
+        return ans;
     }
 
     private static void modifyInt(Integer a) {
