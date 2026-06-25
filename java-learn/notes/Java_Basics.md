@@ -150,6 +150,7 @@ Because pqr is a variable. The string xyz is evaluated at runtime. That typicall
 different reference from the internal reference "Java" stored in abc. Therefore abc == xyz is false.
 
 
+
 ## Q7. What is wrong with below code
 
 package p1;
@@ -215,3 +216,39 @@ Function<Integer, Integer> result2 = doubleIt.andThen(addThen);
 
 System.out.println(result.apply(5)); // 30
 System.out.println(result2.apply(5)); // 20
+
+## Q9. What is the output for below code:
+String abc = "Java";
+final String pqr = "Ja";
+String xyz = pqr + "va";
+System.out.println(abc == xyz);
+
+### Output:
+true
+
+The output is true because pqr is a final variable initialized with a compile-time constant.
+pqr is a constant variable because:
+has all of these properties:
+
+1. It is final
+2. Its type is String
+3. It is initialized with a compile-time constant expression: "Ja"
+
+So this expression 
+pqr + "va" 
+is also treated as a compile-time constant expression.
+
+The compiler effectively changes this:
+String xyz = pqr + "va";
+into
+String xyz = "Java";
+
+Now both variables refer to the same string literal from the string pool:
+String abc = "Java";
+String xyz = "Java";
+
+So:
+abc == xyz
+checks whether both references point to the same object. In this case, they do, so the output is:
+True
+
