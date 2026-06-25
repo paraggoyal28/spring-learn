@@ -126,3 +126,92 @@ Why it's Runtime: The program doesn't know which version of the method to run un
 
 Key Characteristic: The decision is "deferred" until the program is actively running.
 
+## Q5. What is the output for below code:
+String abc = "Java";
+String pqr = "Ja" +  "va"; 
+System.out.println(abc == pqr);
+
+### Output: 
+true
+
+Because "Ja" and "va" both are string literals, so the compiler folds it at the compile time into a single literal "Java". That
+literal is internal, so abc and pqr refer to the same pooled object. Therefore abc == pqr is true.
+
+## Q6. What is the output for below code:
+String abc = "Java";
+String pqr = "Ja";
+String xyz = pqr + "va";
+System.out.println(abc == xyz);
+
+### Output:
+false
+
+Because pqr is a variable. The string xyz is evaluated at runtime. That typically creates a new String object, so xyz is 
+different reference from the internal reference "Java" stored in abc. Therefore abc == xyz is false.
+
+
+## Q7. What is wrong with below code
+
+package p1;
+
+public class Parent {
+  public void display() {
+    System.out.println("Hello, This is a parent class");
+  }
+}
+
+package p2;
+
+class Child extends Parent {
+
+  int cnt = 0;
+
+  void display() {
+    System.out.println("Hello, This is a child class");
+  }
+
+  static void increment() {
+    cnt++;
+  }
+}
+
+### Three problems with above question:
+1. Parent is declared in package p1 so using it in package p2 requires us to import p1.Parent;
+2. cnt is a non-static variable, it cannot be used in a static method increment
+3. overridden display method in the child class has a lower access specifier than the display method in the parent class.
+
+Correct version will be:
+
+package p2;
+
+import p1.Parent;
+
+class Child extends Parent {
+
+  int cnt = 0;
+
+  @Override
+  public void display() {
+    System.out.println("Hello, This is a child class");
+  }
+
+  void increment() {
+    cnt++;
+  }
+}
+
+Or if increment needs to be stayed static then 
+
+static void increment(Child child) {
+    child.cnt++;
+}
+
+## Q8. What is the output for below code
+
+Function<Integer, Integer> doubleIt = x -> x * 2;
+Function<Integer, Integer> addTen = x -> x + 10;
+Function<Integer, Integer> result = doubleIt.compose(addTen);
+Function<Integer, Integer> result2 = doubleIt.andThen(addThen);
+
+System.out.println(result.apply(5)); // 30
+System.out.println(result2.apply(5)); // 20
