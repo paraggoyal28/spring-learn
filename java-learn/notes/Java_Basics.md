@@ -252,3 +252,193 @@ abc == xyz
 checks whether both references point to the same object. In this case, they do, so the output is:
 True
 
+## Q9: What is the output of the below program
+
+class Test {
+
+  static int cnt = 0;
+
+  Test() {
+    cnt += 1;
+  }
+}
+
+public class Main {
+  public static void main(String[] args) {
+
+    Test test1 = new Test();
+    Test test2 = new Test();
+    Test test3 = new Test();
+
+    System.out.println(test1.count);
+    System.out.println(test2.count);
+    System.out.println(test3.count);
+
+  }
+}
+
+### Output:
+3
+3
+3
+
+### Explanation:
+static is a shared variable so after three Test instances are initialized the count becomes 3.
+Therefore all the instances count variable will be 3.
+
+
+## Q10: What is the output of the below program
+
+class Test {
+
+  int cnt = 0;
+
+  Test() {
+    cnt += 1;
+  }
+}
+
+public class Main {
+  public static void main(String[] args) {
+
+    Test test1 = new Test();
+    Test test2 = new Test();
+    Test test3 = new Test();
+
+    System.out.println(test1.count);
+    System.out.println(test2.count);
+    System.out.println(test3.count);
+
+  }
+}
+
+### Output:
+1
+1
+1
+
+### Explanation:
+instance variable are specific to the class instance. So the count variable is 1 for each of the Test instance.
+
+## Q11: Method overloading with compile-time overload resolution / most specific method selection.
+
+
+class Main {
+    private static void print(Object obj) {
+        System.out.println("Object");
+    }
+
+    private static void print(String str) {
+        System.out.println("String");
+    }
+
+    public static void main(String args[]) {
+        new Main().print(null);
+    }
+}
+
+### Output
+String
+
+More specifically, this example demonstrates overload resolution: Java decides which overloaded method to call at compile time based on the argument type.
+When you pass null, both methods can accept it, but String is more specific than Object, so Java chooses: String instead of Object
+
+## Q12: Method overloading with compile-time overload resolution / most specific method selection.
+
+
+class Main {
+    private static void print(Object obj) {
+        System.out.println("Object");
+    }
+
+    private static void print(String str) {
+        System.out.println("String");
+    }
+
+    private static void print(Integer str) {
+        System.out.println("Integer");
+    }
+
+    public static void main(String args[]) {
+        new Main().print(null);
+    }
+}
+
+### Output
+Compile Time Error
+Main.java:17: error: reference to print is ambiguous
+        new Main().print(null);
+                  ^
+  both method print(String) in Main and method print(Integer) in Main match
+
+### Q13: 
+
+import java.util.*;
+
+class Main {
+    private static void print(Object obj) {
+        System.out.println("Object");
+    }
+
+    private static void print(long str) {
+        System.out.println("long");
+    }
+
+    private static void print(Integer str) {
+        System.out.println("Integer");
+    }
+
+    public static void main(String args[]) {
+        new Main().print(10);
+    }
+}
+
+### Output:
+long
+
+### Explanation:
+Integer 10 is assigned to long because it is primitive type
+print(Object obj)   // needs boxing int -> Integer, then upcast to Object
+print(long str)     // needs widening int -> long
+print(Integer str)  // needs boxing int -> Integer
+
+Java overload resolution prefers conversions in this order:
+1. Exact match
+2. Primitive widening, like int -> long
+3. Boxing, like int -> Integer
+4. Varargs
+
+
+### Q14: 
+
+import java.util.*;
+
+class Main {
+    private static void print(Object obj) {
+        System.out.println("Object");
+    }
+
+    private static void print(Long str) {
+        System.out.println("Long");
+    }
+
+    private static void print(Integer str) {
+        System.out.println("Integer");
+    }
+
+    public static void main(String args[]) {
+        new Main().print(10);
+    }
+}
+
+### Output:
+Integer
+
+### Explanation:
+Now Integer is more near to int than the Long Wrapper class.
+So it box to Integer
+
+
+
+
+
