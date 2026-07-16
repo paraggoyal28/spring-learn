@@ -83,3 +83,98 @@ source.add("D");
 System.out.println(snapshot); // still [A, B, C]
 
 
+## Queue/Stack/Deque
+
+Queue and Deque are interfaces. Deque extends Queue, so every deque can also be used as a queue. Stack is not an interface - it
+is a legacy concrete class extending Vector. Java recommends using a Deque, normally ArrayDeque, instead of Stack for LIFO
+operations.
+
+| Class | Package | Main Purpose | 
+| -------- | ------- | ---------- |
+| AbstractQueue | java.util | Base class for writing custom queues | 
+| ArrayDeque | java.util | General-purpose queue, stack, and deque | 
+| LinkedList | java.util | LinkedList that also implements Deque | 
+| PriorityQueue | java.util | Processes elements according to priority | 
+| ArrayBlockingQueue | java.util.concurrent | Fixed-capacity blocking FIFO queue | 
+| ConcurrentLinkedQueue | java.util.concurrent | Unbounded, thread-safe, non-blocking FIFO queue | 
+| DelayQueue | java.util.concurrent | Elements become removable after a delay | 
+| LinkedBlockingDeque | java.util.concurrent | Blocking queue/deque at both ends | 
+| LinkedBlockingQueue | java.util.concurrent | Optionally bounded blocking FIFO queue | 
+| LinkedTransferQueue | java.util.concurrent | Queue supporting direct producer-to-consumer transfer | 
+| PriorityBlockingQueue | java.util.concurrent | Thread-safe blocking priority queue | 
+| SynchronousQueue | java.util.concurrent | Direct handoff with no internal storage | 
+| ConcurrentLinkedDeque | java.util.concurrent | Unbounded thread-safe deque |
+
+### ArrayDeque
+Non-thread safe queue, stack, or deque. It grows as required, prohibits null. Preferred over Stack for stacks and LinkedList for queues.
+As a FIFO queue
+import java.util.ArrayDeque;
+import java.util.Queue;
+
+Queue<String> customers = new ArrayDeque<>();
+
+customers.offer("Alice");
+customers.offer("Bob");
+customers.offer("Charlie");
+
+System.out.println(customers.poll()); // Alice
+System.out.println(customers.poll()); // Bob
+
+As a LIFO stack
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+Deque<Integer> stack = new ArrayDeque<>();
+
+stack.push(10);
+stack.push(20);
+stack.push(30);
+
+System.out.println(stack.peek()); // 30
+System.out.println(stack.pop());  // 30
+System.out.println(stack.pop());  // 20
+
+As a double ended queue
+Deque<String> deque = new ArrayDeque<>();
+
+deque.offerFirst("B");
+deque.offerFirst("A");
+deque.offerLast("C");
+
+System.out.println(deque);           // [A, B, C]
+System.out.println(deque.pollFirst()); // A
+System.out.println(deque.pollLast());  // C
+
+### LinkedList
+LinkedList implements Deque and List. It supports queue, stack and deque operations, but not synchronized.
+import java.util.LinkedList;
+import java.util.Queue;
+
+Queue<String> queue = new LinkedList<>();
+
+queue.offer("First");
+queue.offer("Second");
+
+System.out.println(queue.poll()); // First
+
+Can be used as a deque
+LinkedList<Integer> deque = new LinkedList<>();
+
+deque.addFirst(20);
+deque.addFirst(10);
+deque.addLast(30);
+
+System.out.println(deque); // [10, 20, 30]
+
+For a basic queue or stack, prefer ArrayDeque unless you specifically need LinkedList functionality.
+
+### 
+
+
+
+
+## Set
+
+
+
+## Map
