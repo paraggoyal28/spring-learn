@@ -831,6 +831,504 @@ thread.
 
 ## Set
 
+### HashSet
+Implements Set interface.
+Store unique elements, and it doesn't maintain any specific order of elements,
+Does not allow duplicate elements.
+Uses HashMap internally which is an implementation of hash table data structure.
+Also implements Serializable and Cloneable interface.
+Not thread-safe, to make it thread-safe, synchronization is needed externally.
+
+Capacity refers to the number of buckets in the hash table.
+The default capacity of HashSet is 16 and load factor is 0.75.
+When the number of elements increases the threshold, the capacity doubles.
+Threshold = 16 * 0.75 = 12.
+HashSet handles collisions using chaining (LinkedList) and converts it to a balanced tree 
+(Red-Black Tree) when the number of elements in a bucket exceeds the threshold.
+
+Performance: O(1)
+
+Set<String> set = new HashSet<>();
+set.add("Apple");
+set.add("Banana");
+set.add("Apple"); // Ignored, duplicates not allowed
+
+Practical Tip: If you expect a large number of elements, provide an initial capacity to the constructor (e.g., new HashSet<>(64)) to avoid frequent resizing
+
+### LinkedHashSet
+Implements Set interface and maintains insertion order while storing unique elements.
+Combines features of HashSet and a LinkedList.
+Maintains insertion order of elements.
+Stores unique elements only (no duplicates).
+Provides fast performance for basic operations.
+LinkedHashSet<String> set = new LinkedHashSet<>();
+set.add("Apple");
+set.add("Banana");
+set.add("Cherry");
+set.add("Apple");
+System.out.println("" + set);
+
+Output:
+[Apple, Banana, Cherry]
+
+If an element is removed and then added again, it is inserted at the end of the LinkedHashSet, because insertion order is maintained based on latest insertion.
+
+### TreeSet
+Stores unique elements in sorted order.
+Part of java.util package that implements the SortedSet interface.
+Internally uses Red-Black tree to maintain sorting.
+Does not allow null elements because sorting is based on comparison, which may cause NullPointerException.
+Implements the NavigableSet interface and provides navigation methods like higher(), lower(), ceiling() and floor().
+Not synchronized and can be made synchronized using Collections.synchronizedSet()
+
+TreeSet hierarchy
+Collection -> Set -> SortedSet -> NavigableSet -> TreeSet
+
+A class to be used inside TreeSet has to implement Comparable or provide a Comparator to avoid 
+ClassCastException at runtime.
+Built-in classes like String and wrapper classes already implements Comparable.
+
+If a class does not implement Comparable (e.g., StringBuffer), provide a Comparator.
+
+import java.util.*;
+
+class Geeks {
+
+    public static void main(String[] args)
+    {
+        // Creating a TreeSet with a custom Comparator
+        Set<StringBuffer> ts = new TreeSet<>(new Comparator<StringBuffer>() {
+            @Override
+            public int compare(StringBuffer sb1, StringBuffer sb2) {
+                return sb1.toString().compareTo(sb2.toString());
+            }
+        });
+
+        // Adding elements to the TreeSet
+        ts.add(new StringBuffer("A"));
+        ts.add(new StringBuffer("Z"));
+        ts.add(new StringBuffer("L"));
+        ts.add(new StringBuffer("B"));
+        ts.add(new StringBuffer("O"));
+        ts.add(new StringBuffer("1"));
+
+        // Printing the elements
+        System.out.println(ts); 
+    }
+}
+
+// Output
+[1, A, B, L, O, Z]
+
+### EnumSet
+EnumSet is highly specialized, high-performance Set implementation designed exclusively for Enum
+types. It is represented internally as a bit vector, making it incredibly memory efficient and
+fast. Operations like add, remove, and contains are O(1). Best for tracking states, permissions, 
+or feature flags.
+It uses BitVector as internal data structure.
+
+import java.util.EnumSet;
+
+enum Permission { READ, WRITE, EXECUTE }
+
+public class PermissionsManager {
+    public static void main(String[] args) {
+        // Create a set with specific enum constants
+        EnumSet<Permission> myPerms = EnumSet.of(Permission.READ, Permission.WRITE);
+        
+        // Check for membership
+        if (myPerms.contains(Permission.READ)) {
+            System.out.println("Read access granted.");
+        }
+        
+        // Add a new permission
+        myPerms.add(Permission.EXECUTE);
+        System.out.println("Updated Permissions: " + myPerms);
+    }
+}
+
+### CopyOnWriteArraySet
+Thread-safe set where all mutative operations (like add or remove) creates a fresh copy of underlying 
+array.
+Perfect for read-heavy scenarios where we need thread-safety, but rarely modify the set. Iterators
+provide a "snapshot" of the set, so we never encounter ConcurrentModificationException 
+while traversing it
+Practical Usage: Ideal for maintaining lists of event listeners or subscribers where the list changes 
+infrequently but is notified/read by many threads.
+
+Example:
+import java.util.concurrent.CopyOnWriteArraySet;
+
+public class EventPublisher {
+    private final CopyOnWriteArraySet<String> subscribers = new CopyOnWriteArraySet<>();
+
+    public void subscribe(String name) { subscribers.add(name); }
+
+    public void notifyAll(String message) {
+        // Safe to iterate even if another thread adds a subscriber during this loop
+        for (String sub : subscribers) {
+            System.out.println("Notifying " + sub + ": " + message);
+        }
+    }
+}
+
+CopyOnWriteArraySet is essentially a wrapper around a CopyOnWriteArrayList. It maintains an internal 
+array. Whenever a modification occurs (like adding or removing an element), it creates a brand new 
+copy of that entire array.
+
+### ConcurrentSkipListSet
+Thread-safe, sorted set based on a ConcurrentSkipListMap. 
+How it works: A "skip list" is a probabilistic data structure that allows for fast search, insertion,
+and deletion by maintaining multiple layers of linked lists, which "allow" the algorithm to "skip" 
+over large sections of data.
+Why Use It: Unlike CopyOnWriteArraySet, this does not copy the whole structure on every write, 
+making it much more scalable for sets that are modified frequently. It keeps elements in sorted order
+and provides O(log n) performance. 
+Best for high-concurrency environments where we need a sorted set (eg. a real time leaderboard or
+a priority-based task queue).
+Uses ConcurrentSkipListMap as underlying data structure.
+
+
+import java.util.concurrent.ConcurrentSkipListSet;
+
+public class Leaderboard {
+    private final ConcurrentSkipListSet<Integer> scores = new ConcurrentSkipListSet<>();
+
+    public void addScore(int score) {
+        scores.add(score); // Thread-safe, keeps list sorted
+    }
+
+    public void showTopScores() {
+        System.out.println("Current scores in order: " + scores);
+        System.out.println("Highest score: " + scores.last());
+    }
+}
 
 
 ## Map
+
+### HashMap
+Characteristics: No ordering guarantee, allows one null key and multiple null values, not thread-safe,
+O(1) average time for get/put.
+Default choice when we just need fast key lookups and don't care about order.
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class HashMapExample {
+    public static void main(String[] args) {
+        Map<String, Integer> inventory = new HashMap<>();
+        inventory.put("Apples", 50);
+        inventory.put("Bananas", 30);
+        inventory.put("Cherries", 100);
+        inventory.put(null, 0); // allowed
+
+        System.out.println(inventory.get("Apples")); // 50
+        inventory.merge("Apples", 10, Integer::sum);  // 60
+        inventory.computeIfAbsent("Grapes", k -> 0);
+
+        for (Map.Entry<String, Integer> entry : inventory.entrySet()) {
+            System.out.println(entry.getKey() + " -> " + entry.getValue());
+        }
+    }
+}
+
+Practical Usage: Caching, counting word frequencies, general purpose lookup tables,
+configuration maps.
+
+// Word frequency counter
+Map<String, Integer> freq = new HashMap<>();
+for (String word : "the quick brown fox the lazy dog the".split(" ")) {
+    freq.merge(word, 1, Integer::sum);
+}
+
+### LinkedHashMap
+
+Characteristics: Maintains insertion order (or access order if configured), slightly slower than 
+HashMap due to internal doubly-linked list, allows null keys/values.
+When To Use: When we need predictable insertion order, or want to build an LRU cache.
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class LinkedHashMapExample {
+    public static void main(String[] args) {
+        Map<String, String> capitals = new LinkedHashMap<>();
+        capitals.put("India", "New Delhi");
+        capitals.put("USA", "Washington DC");
+        capitals.put("Japan", "Tokyo");
+
+        // Iterates in insertion order
+        capitals.forEach((k, v) -> System.out.println(k + " -> " + v));
+    }
+}
+
+Multiple null keys allowed
+
+Practical Usage- LRU cache
+
+class LRUCache<K, V> extends LinkedHashMap<K, V> {
+    private final int capacity;
+
+    LRUCache(int capacity) {
+        super(capacity, 0.75f, true); //true - access order
+        this.capacity = capacity;
+    }
+
+    @Override 
+    protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+        return size() > capacity;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        // Usage
+        LRUCache<Integer, String> cache = new LRUCache<>(3);
+        cache.put(1, "A");
+        cache.put(2, "B");
+        cache.put(3, "C");
+        System.out.println(cache.get(1)); // moves 1 to end
+        cache.put(4, "D");
+        System.out.println(cache.keySet()); // [3, 1, 4]
+
+    }
+}
+
+### TreeMap
+Characteristics: Implements NavigableMap/SortedMap - keys are always sorted (natural order or via
+Comparator). No null keys allowed (throws NullPointerException). O(log n) for get/put (Red-Black tree 
+internally).
+
+When to use: When we need sorted keys, range queries, or "closest match" lookups.
+
+import java.util.TreeMap;
+import java.util.Map;
+
+public class TreeMapExample {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> scores = new TreeMap<>();
+        scores.put(85, "Alice");
+        scores.put(92, "Bob");
+        scores.put(76, "Charlie");
+        scores.put(99, "Dave");
+
+        System.out.println(scores); // sorted by key: {76=Charlie, 85=Alice, 92=Bob, 99=Dave}
+
+        System.out.println(scores.firstKey());       // 76
+        System.out.println(scores.lastKey());         // 99
+        System.out.println(scores.higherKey(85));     // 92 (strictly greater)
+        System.out.println(scores.floorKey(90));      // 85 (<= 90)
+        System.out.println(scores.headMap(90));        // keys < 90
+        System.out.println(scores.tailMap(90));        // keys >= 90
+
+        // Custom comparator: descending order
+        TreeMap<Integer, String> desc = new TreeMap<>((a, b) -> b - a);
+        desc.putAll(scores);
+        System.out.println(desc); // {99=Dave, 92=Bob, 85=Alice, 76=Charlie}
+    }
+}
+
+Practical Usage: Leaderboards, range-based queries (e.g "find all events between two timestamps"),
+auto sorted dictionaries.
+
+### Hashtable
+Characteristics: Legacy class, synchronized (thread-safe but slow), does not allow null keys or null
+values.
+When to Use: Rarely used 
+
+import java.util.Hashtable;
+
+public class HashtableExample {
+    public static void main(String[] args) {
+        Hashtable<String, Integer> table = new Hashtable<>();
+        table.put("one", 1);
+        table.put("two", 2);
+        // table.put(null, 1); // throws NullPointerException
+
+        System.out.println(table);
+    }
+}
+
+Practical Usage: Legacy multi-threaded applications 
+
+### ConcurrentHashMap
+Characteristics: Thread-safe without locking the entire map (segment/bucket level locking),
+high concurrency, no null key/values allowed, part of java.util.concurrent.
+When to use: Multi-threaded environments needing a shared map with good performance.
+
+import java.util.concurrent.ConcurrentHashMap;
+
+public class ConcurrentHashMapExample {
+    public static void main(String[] args) throws InterruptedException {
+        ConcurrentHashMap<String, Integer> counter = new ConcurrentHashMap<>();
+
+        Runnable task = () -> {
+            for (int i = 0; i < 1000; i++) {
+                counter.merge("count", 1, Integer::sum);
+            }
+        };
+
+        Thread t1 = new Thread(task);
+        Thread t2 = new Thread(task);
+        t1.start(); t2.start();
+        t1.join(); t2.join();
+
+        System.out.println(counter.get("count")); // 2000, safely
+    }
+}
+
+Practical Usage: Shared caches, request counters, concurrent data aggregation in web servers/services.
+
+// Atomic compute pattern - thread-safe increment without external locking
+ConcurrentHashMap<String, Integer> visits = new ConcurrentHashMap<>();
+visits.compute("home", (k, v) -> (v == null) ? 1 : v + 1);
+
+### ConcurrentSkipListMap
+
+Characteristics: Thread-safe and sorted (concurrent equivalent of TreeMap), Based on skip-list data 
+structure, O(log n) operations, no null keys/values.
+When To Use: Need both sorting and thread safety - eg. concurrent priority-based structure.
+
+import java.util.concurrent.ConcurrentSkipListMap;
+
+public class ConcurrentSkipListMapExample {
+    public static void main(String[] args) {
+        ConcurrentSkipListMap<Integer, String> map = new ConcurrentSkipListMap<>();
+        map.put(5, "Five");
+        map.put(1, "One");
+        map.put(3, "Three");
+
+        System.out.println(map); // {1=One, 3=Three, 5=Five} — always sorted
+
+        System.out.println(map.firstEntry()); // 1=One
+        System.out.println(map.ceilingKey(2)); // 3
+    }
+}
+
+Practical Usage: Real time leaderboard dashboards, time series data structures accessed by 
+multiple threads.
+
+### IdentityHashMap
+Characteristics: Uses reference equality (==) instead of equals() for comparing keys.
+Rarely used, but has niche uses.
+
+import java.util.IdentityHashMap;
+
+public class IdentityHashMapExample {
+    public static void main(String[] args) {
+        IdentityHashMap<String, String> map = new IdentityHashMap<>();
+        String a = new String("key");
+        String b = new String("key");
+
+        map.put(a, "Value A");
+        map.put(b, "Value B"); // treated as a DIFFERENT key since a != b
+
+        System.out.println(map.size()); // 2
+    }
+}
+
+Practical Usage: Object graph traversal (e.g serialization frameworks, deep copy utilities),
+where we need to track "have I already visited this exact object" rather than "an equal object".
+
+// Cycle detection during object graph traversal
+IdentityHashMap<Object, Boolean> visited = new IdentityHashMap<>();
+void traverse(Object obj) {
+    if (visited.containsKey(obj)) return; // already visited this exact instance
+    visited.put(obj, true);
+    // ... recurse into fields
+}
+
+### WeakHashMap
+
+Characteristics: Keys are held via WeakReference. If a key has no other strong references, it is 
+garbage collected and its entry auto removed. Useful for memory sensitive caches.
+
+import java.util.Map;
+import java.util.WeakHashMap;
+
+public class WeakHashMapExample {
+    public static void main(String[] args) throws InterruptedException {
+        Map<Object, String> map = new WeakHashMap<>();
+        Object key = new Object();
+        map.put(key, "some cached data");
+
+        System.out.println(map.size()); // 1
+
+        key = null;             // remove strong reference
+        System.gc();             // suggest GC
+        Thread.sleep(500);
+
+        System.out.println(map.size()); // likely 0 — entry was garbage collected
+    }
+}
+
+Practical Usage: Caches where entries should automatically disappear once the key object is 
+no longer used elsewhere (e.g listener registries, metadata caches tied to object lifecycles).
+
+### EnumMap
+Characteristics: Specialized, highly efficient map for enum keys only, internally backed by an 
+array maintains natural enum order, no null keys.
+
+import java.util.EnumMap;
+import java.util.Map;
+
+public class EnumMapExample {
+    enum Day { MON, TUE, WED, THU, FRI, SAT, SUN }
+
+    public static void main(String[] args) {
+        EnumMap<Day, String> schedule = new EnumMap<>(Day.class);
+        schedule.put(Day.MON, "Gym");
+        schedule.put(Day.WED, "Meeting");
+        schedule.put(Day.FRI, "Deadline");
+
+        // Iterates in enum declaration order, not insertion order
+        for (Map.Entry<Day, String> entry : schedule.entrySet()) {
+            System.out.println(entry.getKey() + " -> " + entry.getValue());
+        }
+    }
+}
+
+Practical Usage: State machines, day of week schedules, configuration keyed by fixed categories
+(much faster and memory efficient than HashMap<Enum, .....>).
+
+### Properties
+Characteristics: Specialized for String key-value pairs, typically used for configuration files 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+public class PropertiesExample {
+    public static void main(String[] args) throws IOException {
+        Properties props = new Properties();
+        props.setProperty("db.url", "jdbc:mysql://localhost:3306/mydb");
+        props.setProperty("db.user", "admin");
+
+        // Save to file
+        props.store(new java.io.FileOutputStream("config.properties"), "DB Config");
+
+        // Load from file
+        Properties loaded = new Properties();
+        loaded.load(new FileInputStream("config.properties"));
+        System.out.println(loaded.getProperty("db.url"));
+    }
+}
+
+Practical usage: Application configuration, .properties resource bundles, environment/deployment settings.
+
+## Summary Table
+| Implementation | Ordering | Thread-Safe | Nulls Allowed | Performance | Best For | 
+| -------- | --------- | ------- | -------- | ------- | ------- |
+| HashMap | None | No | 1 null key many null values | O(1) avg | General purpose | 
+| LinkedHashMap | Insertion/access order | No | Yes | O(1) avg | Predictable Iteration, LRU cache | 
+| TreeMap | Sorted | No | No null keys | O(log n) | Sorted data, range queries | 
+| Hashtable | None | Yes (full lock) | No | O(1) avg, slower | Legacy code, only | 
+| ConcurrentHashMap | None | Yes (fine grained) | No | O(1) avg | High-concurrency apps | 
+| ConcurrentSkipListMap | Sorted | Yes | No | O(log n) | Concurrent + Sorted | 
+| IdentityHashMap | None | No | Yes | O(1) avg | Reference-based comparison | 
+| WeakHashMap | None | No | Yes | O(1) avg | GC-sensitive caches | 
+| EnumMap | Enum order | No | No null keys | O(1), array backed | Enum-keyed data | 
+| Properties | None | Yes (Inherits Hashtable)  | No | O(1) avg | Config files | 
+
+
+
