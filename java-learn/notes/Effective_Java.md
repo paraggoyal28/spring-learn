@@ -355,3 +355,116 @@ public TreeSet(Collection<? extends E> source) {
     addAll(source);
 }
 
+Example of Deep Copy using clone
+
+class Address implements Cloneable {
+    String city;
+
+    Address (String city) {
+        this.city = city;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        // Clone the Address object
+        return super.clone();
+    }
+}
+
+class Person implements Cloneable {
+    String name;
+    Address address;
+
+    Person(String name, Address address) {
+        this.name = name;
+        this.address = address;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        // Create a shallow copy first
+        Person cloned = (Person) super.clone();
+
+        // Now clone the nested Address object manually
+        cloned.address = (Address) address.clone();
+
+        return cloned;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) throws CloneNotSupportedException {
+
+        Address a1 = new Address("London");
+        Person p1 = new Person("Alice", a1);
+
+        // Create deep copy
+        Person p2 = (Person) p1.clone();
+
+        // Display original and copied before change
+        System.out.println("Original city: " + p1.address.city);
+
+        System.out.println("Copied city: " + p2.address.city);
+
+        // Modify copied object's address
+        p2.address.city = "Paris";
+
+        // Display original and copied before change
+        System.out.println("Original city: " + p1.address.city);
+
+        System.out.println("Copied city: " + p2.address.city);
+
+    }
+}
+
+* Use Copy constructor
+
+class Address {
+    String city;
+
+    Address(String city) {
+        this.city = city;
+    }
+
+    // Copy Constructor for deep copy
+    Address (Address other) {
+        this.city = other.city;
+    }
+}
+
+class Person {
+    String name;
+    Address address;
+
+    Person(String name, Address address) {
+        this.name = name;
+        this.address = address;
+    }
+
+    Person(Person other) {
+        this.name = other.name;
+        this.address = new Address(other.address);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+
+        Address a1 = new Address("London");
+        Person p1 = new Person("Bob", a1);
+
+        // Deep copy using copy constructor
+        Person p2 = new Person(p1);
+
+        // Display original and modified city
+        System.out.println("Original City: " + p1.address.city);
+        System.out.println("Copied City: " + p2.address.city);
+
+        p2.address.city = "Paris";
+
+        // Display original and modified city
+        System.out.println("Original City: " + p1.address.city);
+        System.out.println("Copied City: " + p2.address.city);
+
+    }
+}
