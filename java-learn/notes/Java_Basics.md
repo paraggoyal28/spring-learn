@@ -439,3 +439,88 @@ Now Integer is more near to int than the Long Wrapper class.
 So it box to Integer
 
 
+### Q15. What is the output ? 
+
+public final class Example04 {
+    public static void main(String[] args) {
+        long x = (1 << 24) + 1;
+        if (x != (x += 0.0f)) {
+            System.out.println("What??");
+        } else {
+            System.out.println("OK!");
+        }
+        System.out.println("x = " + x + "; ... (x += 0.0f) = " + (x += 0.0f));
+}   }
+
+## Output
+738 ms
+What??
+x = 16777216; ... (x += 0.0f) = 16777216
+
+public final class Main {
+    public static void main(String[] args) {
+        long x = (1 << 23) + 1;
+        if (x != (x += 0.0f)) {
+            System.out.println("What??");
+        } else {
+            System.out.println("OK!");
+        }
+        System.out.println("x = " + x + "; ... (x += 0.0f) = " + (x += 0.0f));
+}   }
+
+## output
+712 ms
+OK!
+x = 8388609; ... (x += 0.0f) = 8388609
+
+### Explanation 
+The key is that x += 0.0f performs the addition using 32-bit float arithmetic, even though x is a long.
+x += 0.0f; 
+is basically
+x = (long) ((float) x + 0.0f);
+
+The explicit cast to float is where precision may be lost.
+
+First program: (1 << 24) + 1
+This produces:
+x = 16777217
+A Java float has 24 bits of integer precision: 23 stored fraction bits plus one implicit leading bit. It can represent every integer exactly only through:
+
+2^24 = 16777216
+
+It cannot represent 16777217. Converting it to float rounds it to:
+16777216.0f
+Therefore 
+x += 0.0f;
+returns
+16777216.0f
+
+Java evaluates operands from left to right:
+
+The left x is read as 16777217.
+The right expression changes x to 16777216.
+Java compares:
+
+16777217 != 16777216
+That is true, so it prints:
+What?? 
+
+
+Second Program: (1 << 23) + 1
+
+long x = (1 << 23) + 1;
+produces
+8388609
+
+THis value is below 2^24, so it is exactly representable as float
+
+Thus:
+x += 0.0f;
+does not change 8388609 → 8388609.0f → 8388609
+
+The comparison is therefore:
+8388609 != 8388609
+which is false, so the program prints:
+
+OK!
+x = 8388609; ... (x += 0.0f) = 8388609
