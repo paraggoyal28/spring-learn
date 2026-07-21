@@ -468,3 +468,63 @@ public class Main {
 
     }
 }
+
+### Consider implementing Comparable
+
+Virtually all of the value classes in Java platform libraries, as well as enum types implements Comparable. If we are 
+writing a value class with an obvious natural ordering, such as alphabetical order, numerical order, or chronological order,
+we should implement the Comparable interface.
+public interface Comparable<T> {
+    int compareTo(T t);
+}
+
+Compares this object with the specified object for order. Returns a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object. Throws ClassCastException if the specified object’s type prevents it from being compared to this object.
+
+If a class has multiple significant fields, the order in which you compare them is critical. Start with the most significant field and work your way down. If a comparison results in anything other than zero (which represents equality), you’re done; just return the result. If the most significant field is equal, compare the next-most-significant field, and so on, until you find an unequal field or compare the least significant field.
+
+// Multiple-field Comparable with primitive fields
+public int compareTo(PhoneNumber pn) {
+    int result = Short.compare(areaCode, pn.areaCode);
+    if (result == 0)  {
+        result = Short.compare(prefix, pn.prefix);
+        if (result == 0)
+            result = Short.compare(lineNum, pn.lineNum);
+    }
+    return result;
+}
+
+In Java 8, the Comparator interface was outfitted with a set of comparator construction methods, which enable fluent construction of comparators.
+
+// Comparable with comparator construction methods
+private static final Comparator<PhoneNumber> COMPARATOR =
+        comparingInt((PhoneNumber pn) -> pn.areaCode)
+          .thenComparingInt(pn -> pn.prefix)
+          .thenComparingInt(pn -> pn.lineNum);
+
+public int compareTo(PhoneNumber pn) {
+    return COMPARATOR.compare(this, pn);
+}
+
+// BROKEN difference-based comparator - violates transitivity!
+static Comparator<Object> hashCodeOrder = new Comparator<>() {
+    public int compare(Object o1, Object o2) {
+        return o1.hashCode() - o2.hashCode();
+    }
+};
+
+Do not use this technique. It is fraught with danger from integer overflow and IEEE 754 floating point arithmetic artifacts
+
+// Comparator based on static compare method
+static Comparator<Object> hashCodeOrder = new Comparator<>() {
+    public int compare(Object o1, Object o2) {
+        return Integer.compare(o1.hashCode(), o2.hashCode());
+    }
+};
+
+Or
+
+// Comparator based on Comparator construction method
+static Comparator<Object> hashCodeOrder =
+        Comparator.comparingInt(o -> o.hashCode());
+
+In summary, whenever you implement a value class that has a sensible ordering, you should have the class implement the Comparable interface so that its instances can be easily sorted, searched, and used in comparison-based collections. When comparing field values in the implementations of the compareTo methods, avoid the use of the < and > operators. Instead, use the static compare methods in the boxed primitive classes or the comparator construction methods in the Comparator interface.

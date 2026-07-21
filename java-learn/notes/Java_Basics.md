@@ -524,3 +524,93 @@ which is false, so the program prints:
 
 OK!
 x = 8388609; ... (x += 0.0f) = 8388609
+
+## Checked Vs Unchecked exceptions
+
+### Checked exception
+Checked exception must be either handled using try-catch or declared using throws:
+import java.io.FileReader;
+import java.io.IOException;
+
+public class Main {
+    public static void main(String[] args) {
+        try {
+            FileReader reader = new FileReader("data.txt");
+        } catch (IOException e) {
+            System.out.println("File could not be opened.");
+        }
+    }
+}
+
+Alternatively:
+public static void readFile() throws IOException {
+    FileReader reader = new FileReader("data.txt");
+}
+
+Without try-catch or throws, the code will not compile.
+
+Checked exceptions commonly represent situations outside the program’s direct control, such as:
+
+* A file not existing
+* A database connection failing
+* A network operation failing
+
+### Unchecked Exception 
+
+An unchecked exception does not need to be caught or declared.
+
+public class Main {
+    public static void main(String[] args) {
+        int result = 10 / 0;
+    }
+}
+
+This compiles successfully, but at runtime it throws:
+
+ArithmeticException
+
+Another example:
+String name = null;
+System.out.println(name.length());
+
+This throws a NullPointerException.
+
+Unchecked exceptions usually indicate:
+
+Invalid arguments
+Incorrect assumptions
+Logical programming errors
+Improper object state
+
+Exception hierarchy
+
+Throwable
+├── Error
+└── Exception
+    ├── IOException
+    ├── SQLException
+    └── RuntimeException
+        ├── NullPointerException
+        ├── ArithmeticException
+        ├── IllegalArgumentException
+        └── IndexOutOfBoundsException
+
+Exceptions under RuntimeException are unchecked. Other subclasses of Exception are generally checked.
+
+A custom checked exception extends Exception:
+
+class InvalidAccountException extends Exception {
+    public InvalidAccountException(String message) {
+        super(message);
+    }
+}
+
+A custom unchecked exception extends RuntimeException:
+
+class InvalidAccountException extends RuntimeException {
+    public InvalidAccountException(String message) {
+        super(message);
+    }
+}
+
+
