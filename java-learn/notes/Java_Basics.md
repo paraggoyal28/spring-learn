@@ -627,6 +627,78 @@ public                   Yes                    Yes                         Yes 
 Make each class or member as inaccessible as possible.
 
 
+### Checked Vs Unchecked Exception
+
+Checked
+IOException
+FileNotFoundException
+SQLException
+
+Unchecked Exceptions
+NullPointerException
+ArithmeticException
+ArrayIndexOutOfBoundsException
 
 
+### What is immutable class 
+1. Declare the class as final
+2. Make all fields as private and final
+private - restricts direct access from outside the class
+final - ensures that each field can be assigned a value only once 
+3. Donot provide setter methods
+4. Initialize via constructor
+5. Handle mutable objects via Deep copy
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+// Declare class as final
+public final class Team {
+  private final String teamName;
+  private final List<String> members; // Mutable object field
+
+  public Team(String teamName, List<String> members) {
+    this.teamName = teamName;
+
+
+    // DEFENSIVE COPY in constructor
+    // We create a brand new ArrayList using the passed list
+    // This ensures that if the caller modifies their original list outside
+    // it won't affect our internal state
+    this.members = new ArrayList<>(members); 
+  }
+
+  public String getTeamName() {
+    return teamName;
+  }
+
+  public List<String> getMembers() {
+    return Collections.unmodifiableList(members);
+  }
+
+  @Override
+  public String toString() {
+    return "Team Name: " + teamName + ", Members: " + members ; 
+  }
+}
+
+class Main {
+  public static void main(String[] args) {
+    List<String> originalList = new ArrayList<>();
+    originalList.add("Alice");
+    originalList.add("Bob");
+
+    Team team = new Team("Engineering", originalList);
+    System.out.println("Before modification: " + team);
+
+    originalList.add("Charlie");
+    System.out.println("After modification: " + team);
+
+    try {
+      team.getMembers().add("David");
+    } catch (UnsupportedOperationException ex) {
+      System.out.println("Blocked! Cannot modify an immutable class's list: " + ex);
+    }
+  }
+}
