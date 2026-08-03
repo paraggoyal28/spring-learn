@@ -613,4 +613,20 @@ class InvalidAccountException extends RuntimeException {
     }
 }
 
+### Different Access Specifiers
+
+Access Modifier.      Within Same Class.   Within Same Package.    Outside Package (Subclass Only)   Everywhere (World)
+private                  Yes                    No                          No                           No
+Default (No keyword).    Yes                    Yes                         No                           No
+protected                Yes                    Yes                         Yes                          No
+public                   Yes                    Yes                         Yes                          Yes
+
+
+## Minimize the accessibility of classes and members
+
+Make each class or member as inaccessible as possible.
+
+
+
+
 
