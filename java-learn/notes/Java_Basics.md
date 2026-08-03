@@ -702,3 +702,12 @@ class Main {
     }
   }
 }
+
+Why this is critical for immutability ? 
+1. The Constructor Trap (Without Defensive Copy): If we just assign this.members = members; anyone with a reference to 
+the originalList can alter the contents of the list after the Team object is created, effectively changing the internal state
+of our "immutable" object.
+
+2. The Getter Trap (Without unmodifiable view): If we just return return this.members, a caller could execute team.getMembers().clear() or .add() by passing the private field restriction and modifying our object. Using Collections.unmodifiableList() throws 
+an UnsupportedOperationException if anyone attempts to alter it.
+
