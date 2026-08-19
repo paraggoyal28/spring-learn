@@ -69,23 +69,142 @@ Explanation:
 * While executing a stream pipeline, we must not modify the underlying backing data source (the list itself). This is known as interference.
 * The structural modification of the array via list.remove(n) inside the terminal operation disrupts the stream iterator, triggering a ConcurrentModificationException.
 
-## map Vs flatMap Dimensionality 
+1. Filter Even Numbers
 
-What is the exact output of below code ? 
+From a list of integers, return only even numbers
+
+List<Integer> result = numbers.stream()
+                              .filter(n -> n%2 == 0)
+                              .toList();
+
+// Input: [1, 2, 3, 4, 5, 6]
+// Output: [2, 4, 6]
+
+2. Square of each number
+
+Return a list containing the squares of each number
+
+List<Integer> result = numbers.stream()
+                              .map(n -> n * n)
+                              .toList();
+
+// Input: [1, 2, 3, 4]
+// Output: [1, 4, 9, 16]
+
+3. Find first non-repeating character in String
+
+Return the first character that only appears once
+
+Optional<Character> result = str.chars()
+                                .mapToObj(c -> (char) c)
+                                .filter(ch -> str.indexOf(ch) == str.lastIndexOf(ch))
+                                .findFirst();
+                        
+// Input: "swiss"
+// Output: Optional[w]
+
+4. Count occurrences of each element
+
+Return a map with element as the key and its frequency as value
+
+Map<Integer, Long> freq = numbers.stream()      
+                                 .collect(Collectors.groupingBy(n -> n, Collectors.counting()));
+            
+// Input: [1, 2, 2, 3, 3, 3]
+// Output: [1=1, 2=2, 3=3]
+
+5. Sort list of strings by length
+
+List<String> result = names.stream()
+                           .sorted(Comparator.comparingInt(String::length))
+                           .toList();
+                        
+// Input: ["bob", "alex", "ram", "java"]
+// Output: ["bob", "ram", "alex", "java"]
+
+6. Sum of all numbers
+
+int sum = numbers.stream()
+                 .mapToInt(Integer::intValue)
+                 .sum();
+            
+// Input: [1, 2, 3, 4]
+// Output: 10
+
+7. Remove duplicates from a list
+
+List<Integer> dedup = numbers.stream()
+                            .distinct()
+                            .toList();
+                    
+// Input: [1, 1, 2, 2, 2, 3, 3, 3]
+// Output: [1, 2, 3]
+
+8. Find Maximum and Minimum
+
+Find the max and min value from a list
+
+Optional<Integer> maxValue = numbers.stream().max(Integer::compare);
+Optional<Integer> minValue = numbers.stream().min(Integer::compare);
+
+// Input: [1, 4, 8, 10]
+// MaxValue: 10
+// MinValue: 1
+
+9. Convert a list of String to uppercase
+
+Convert all strings in a list to uppercase
+
+List<String> upperCaseStrings = names.stream()
+                                    .map(String::toUpperCase)
+                                    .toList();
+                            
+// Input: ["bob", "alex"]
+// Output: ["BOB", "ALEX"]
+
+10. Partition list into even and odd numbers
+
+Map<Boolean, List<Integer>> result = numbers.stream()
+                                            .collect(Collectors.partitioningBy(n -> n%2 == 0));
+                                        
+// Input: [1, 2, 3, 4, 5]
+// Output: {true=[2, 4], false=[1, 3, 5]}
+
+11. Join List of Strings with Comma
+
+String result = names.stream()
+                    .collect(Collectors.joining(", "));
+
+// Input: ["a", "b", "c"]
+// Output: "a, b, c"
+
+12. Group Strings by first character
+
+Map<Character, List<String>> result = names.stream()
+                                            .collect(Collectors.groupingBy(s -> s.charAt(0)));
+
+// Input: ["apple", "act", "bob", "bat"]
+// Output: {"a": ["apple", "act"], "b": ["bob", "bat"]}
+
+13. Find second highest number
+
+Optional<Integer> secondHighestNumber = numbers.stream()
+                                                .distinct()
+                                                .sorted(Comparator.reverseOrder())
+                                                .skip(1)
+                                                .findFirst();
+
+// Input: [10, 5, 20, 3, 80]
+// Output: 20
+
+14. Check if anyMatch, allMatch, or noneMatch
+
+Any number > 10
+All number > 0
+No number < 0
 
 
-List<List<Integer>> complexStructure = Arrays.asList(
-    Arrays.asList(1, 2),
-    Arrays.asList(3, 4)
-);
+boolean any = numbers.stream().anyMatch(n -> n > 10);
+boolean all = numbers.stream().allMatch(n -> n > 0);
+boolean none = numbers.stream().noneMatch(n -> n < 0);
 
-complexStructure.stream()
-    .map(list -> list.stream().map(n -> n * 2))
-    .forEach(System.out::print);
-
-
-Output: A sequence of object memory addresses/references (e.g., java.util.stream.ReferencePipeline$3@5acf98e4...) instead of numbers.
-
-Explanation:
-* The .map() operation changes the type of elements but keeps a 1:1 relationship because the mapper function returns 
-list.stream().map(....), the resulting stream is a stream of streams ()
