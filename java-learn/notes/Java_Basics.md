@@ -711,3 +711,24 @@ of our "immutable" object.
 2. The Getter Trap (Without unmodifiable view): If we just return return this.members, a caller could execute team.getMembers().clear() or .add() by passing the private field restriction and modifying our object. Using Collections.unmodifiableList() throws 
 an UnsupportedOperationException if anyone attempts to alter it.
 
+### What is the difference between Strongly Typed and Weakly Typed Languages
+
+#### Weakly Typed Languages
+
+No strict enforcement on the value assigned to a variable.
+For eg. let x = 23;
+Now x can be assigned a string as well, like x = "Hello".
+The language itself interprets the type of the variable based on the value provided.
+Can led to issues.
+Simpler to use
+Eg. Javascript, Python
+
+#### Strongly Typed Language
+
+Strict enforcement on the value assigned to a variable.
+For eg. String x = "Hello";
+Now x cannot be assigned x = 23, as it is of type String.
+Prevent issues like doing mathematical operations on String type variables.
+Is a bit difficult to use, because we need to memorize all types of variables before using them
+but can prevent Runtime exception, not checked during writing code.
+Eg. C++, Java, C
