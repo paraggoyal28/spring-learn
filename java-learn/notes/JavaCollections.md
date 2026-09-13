@@ -1332,3 +1332,315 @@ Practical usage: Application configuration, .properties resource bundles, enviro
 
 
 
+# Difference between List.of, List.copyOf, Collections.unmodifiableList(), Arrays.asList
+
+## List.of
+List.of(...) creates a new immutable list from the elements you provide.
+
+List<String> names = List.of("Ada", "Linus", "Grace");
+
+
+// names.add("Ken");        // throws java.lang.UnsupportedOperationException
+// names.set(0, "Alan");    // throws java.lang.UnsupportedOperationException
+
+It rejects null elements
+
+List<String> bad = List.of("Ada", null); // throws NullPointerException
+
+use the above for fixed literal set of data
+
+## List.copyOf
+
+List.copyOf(collection) - creates an immutable snapshot of another collection.
+
+List<String> source = new ArrayList<>(List.of("Ada", "Linus"));
+List<String> snapshot = List.copyOf(source);
+
+source.add("Grace");
+
+System.out.println(source);   // [Ada, Linus, Grace]
+System.out.println(snapshot); // [Ada, Linus]
+
+It also rejects null elements:
+
+List<String> source = Arrays.asList("Ada", null);
+List<String> copy = List.copyOf(source); // throws NullPointerException
+
+Use it when you need an immutable defensive copy—especially in constructors or public APIs.
+
+class Team {
+    private final List<String> members;
+
+    Team(List<String> members) {
+        this.members = List.copyOf(members);
+    }
+}
+
+## Collections.unmodifiableList(list) - creates an unmodifiable view over the original list, not a copy.
+
+
+List<String> source = new ArrayList<>(List.of("Ada", "Linus"));
+List<String> view = Collections.unmodifiableList(source);
+
+// view.add("Grace"); // throws UnsupportedOperationException
+
+source.add("Grace");
+
+System.out.println(view); // [Ada, Linus, Grace]
+
+
+It permits null if backing list does:
+
+List<String> source = new ArrayList<>();
+source.add(null);
+
+List<String> view = Collections.unmodifiableList(source); // OK
+
+
+## Arrays.asList(...) - returns a fixed size list backed by the original array. It is neither fully mutable nor immutable
+
+
+String[] array = {"Ada", "Linus"};
+List<String> list = Arrays.asList(array);
+
+list.set(0, "Grace");     // allowed
+// list.add("Ken");       // throws UnsupportedOperationException
+// list.remove(0);        // throws UnsupportedOperationException
+
+array[1] = "Alan";
+System.out.println(list); // [Grace, Alan]
+
+It allows null:
+List<String> list = Arrays.asList("Ada", null); // OK
+
+Comparison:
+
+| API | Can `set`? | Can `add`/`remove`? | Copy? | Reflects source changes? | Allows `null` |
+|---|---:|---:|---:|---:|---:|
+| `List.of(...)` | No | No | New immutable list | N/A | No |
+| `List.copyOf(source)` | No | No | Yes | No | No |
+| `Collections.unmodifiableList(source)` | No | No | No; read-only view | Yes | Depends on source |
+| `Arrays.asList(array)` | Yes | No | No; array-backed | Yes—array changes appear in list | Yes |
+
+Typical industry usage:
+| API | Common production usage | 
+| ----  | ------ | 
+| List.of(...) | Constants, defaults, small fixed values, test fiztures, and method return values that should never change | 
+| List.copyOf(...) | Defensive copying at API boundaries - constructors, DTO/domain objects, configuration objects, and public getters - to prevent callers from mutating internal state | 
+| Collections.unmodifiableList() | Legacy APIs or cases where a read-only live view is intentional, such as exposing a collection that the owning object continues updating internally | 
+| Arrays.asList(...) | Interoperability with old array based APIs, quick test setup, or converting an existing array to 
+a fixed size List view. Less preferred for new application code | 
+
+// Fixed literal data
+List<String> roles = List.of("ADMIN", "USER");
+
+// Protect your object from caller changes
+this.roles = List.copyOf(inputRoles);
+
+// Need a list that callers cannot alter but internal updates should expose?
+return Collections.unmodifiableList(internalItems);
+
+// Must work with an existing array
+List<String> view = Arrays.asList(existingArray);
+
+For new code, teams usually prefer List.of and List.copyOf. Arrays.asList and Collections.unmodifiableList are still common in older codebases and integration-heavy code.
+
+## Important Java Data Structures used in industry with examples
+
+1. ArrayList - dynamic array
+List<String> responseIds = new ArrayList<>();
+responseids.add("ORD-101");
+responseIds.add("ORD-102");
+responseIds.add("ORD-103");
+
+System.out.println(responseIds);
+
+// Output
+[ORD-101, ORD-102, ORD-103]
+
+// Complexity Analysis
+Read by index: O(1)
+Append:        O(1) amortized
+Middle insert: O(n)
+
+Industry Usage: Transform database entities into ordered API DTOs, store batch-processing results or 
+accumulate validation errors.
+
+2. LinkedList - doubly linked list
+
+Deque<String> tasks = new LinkedList<>();
+
+tasks.addFirst("urgent-task");
+tasks.addLast("normal-task");
+
+System.out.println(tasks.removeFirst()); 
+
+Output:
+urgent-task
+
+Industry Usage:
+Uncommon in modern backend code. Prefer ArrayDeque for queues/stacks. LinkedList only make sense when we 
+specifically need linked-list deque behaviour, random indexed access is O(n).
+
+3. HashMap - 
+
+Map<Long, String> customerById = new HashMap<>();
+
+customerById.put(101L, "Alice");
+customerById.put(102L, "Bob");
+
+System.out.println(customerById.get(102L));
+
+// Output:
+Bob
+
+Industry Usage:
+Creates an index from customerID to customer before joining it with orders; cache request-scoped reference data;
+map validation fields to errors.
+
+get / put / remove: O(1) average
+
+Do not rely on iteration order. It is not thread-safe.
+
+4. LinkedHashMap - Ordered HashMap/LRU Cache
+
+Map<String, String> response = new LinkedHashMap<>();
+
+response.put("requestId", "req-101");
+response.put("status", "SUCCESS");
+response.put("message", "Order created");
+
+System.out.println(response);
+
+// Output:
+{ requestId=req-101, status=SUCCESS, message=Order Created }
+
+Industry Usage: retain deterministic insertion order in configuration or response generation.
+
+LRU Cache Example:
+Map<Integer, String> cache = new LinkedHashMap<>(2, 0.75f, true) {
+    @Override
+    protected boolean removeEldestEntry(Map.Entry<Integer, String> eldest) {
+        return size() > 2;
+    }
+}
+
+cache.put(1, "product-A");
+cache.put(2, "product-B"); // 1 - 2
+cache.get(1); // 2 - 1
+cache.put(3, "product-C"); // 1 - 3
+System.out.println(cache);
+
+Output:
+{1=product-A, 3=product-C}
+Key 2 was evicted because it was least recently used.
+
+5. TreeMap - red-black tree
+
+NavigableMap<Integer, String> discountTiers = new TreeMap<>();
+
+discountTiers.put(0, "0%");
+discountTiers.put(1_000, "5%");
+discountTiers.put(5_000, "10%");
+
+System.out.println(discountTiers.floorEntry(7_500));
+
+// Output:
+5000=10%
+
+Industry Usage: select pricing/discount rules by threshold, map versions to configurations, find audit records in
+an in-memory time range.
+
+get / put / remove: O(log n)
+
+6. HashSet - duplicate-free hash table
+
+Set<String> uniqueOrderIds = new HashSet<>();
+
+System.out.println(uniqueOrderIds.add("ORD-101")); // true
+System.out.println(uniqueOrderIds.add("ORD-101"));  // false
+System.out.println(uniqueOrderIds.contains("ORD-101")); // true
+
+Industry Usage:
+Deduplicating incoming events, track processed IDs within a batch, test user roles/scopes, prevent revisiting 
+graph nodes.
+
+7. Priority Queue - binary heap
+
+record Job(String id, int priority) {}
+
+Queue<Job> jobs = new PriorityQueue<>(
+    Comparator.comparingInt(Job::priority)
+);
+
+jobs.offer(new Job("normal", 5));
+jobs.offer(new Job("urgent", 1));
+jobs.offer(new Job("medium", 3));
+
+System.out.println(jobs.poll());
+
+// Output:
+Job{id=urgent, priority=1}
+
+Industry Usage: choose the next retry/job by urgency, retain top-N results, process earliest scheduled local tasks.
+
+// Complexity
+peek: O(1)
+offer/poll: O(logn)
+
+8. ArrayDeque - stack and FIFO queue
+
+Deque<String> queue = new ArrayDeque<>();
+queue.offerLast("validate-order");
+queue.offerLast("charge-payment");
+System.out.println(queue.pollFirst()); 
+
+// Output:
+validate-order
+
+Industry Usage: local work queue, tree/graph traversal, parser state, iterative workflow logic.
+
+For stack behaviour:
+Deque<String> stack = new ArrayDeque<>();
+stack.push("step-1");
+stack.push("step-2");
+
+System.out.println(stack.pop());
+
+// Output: 
+step-2
+
+Prefer this over legacy stack
+
+9. ConcurrentHashMap
+ConcurrentMap<String, LongAdder> metrics = new ConcurrentHashMap<>();
+
+metrics.computeIfAbsent("/orders", key -> new LongAdder()).increment();
+metrics.computeIfAbsent("/orders", key -> new LongAdder()).increment();
+
+System.out.println(metrics.get("/orders").sum());
+
+// Output:
+2
+
+Industry Usage: Shared metrics counters, local thread-safe registries, request de-duplication, state shared by 
+multiple request threads.
+
+Use atomic methods like putIfAbsent, computeIfAbsent, and merge; it does not allow null keys or values.
+
+10. BlockingQueue - thread coordination
+
+BlockingQueue<String> tasks = new ArrayBlockingQueue<>(2);
+
+tasks.offer("send-welcome-email");
+tasks.offer("generate-pdf");
+
+System.out.println(tasks.take());
+
+// Output:
+send-welcome-email
+
+Industry Usage: worker pools, producer-consumer pipelines, in-process async task processing, backpressure.
+
+## Examples of usage of computeIfAbsent, merge, putIfAbsent
+
