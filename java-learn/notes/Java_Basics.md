@@ -732,3 +732,175 @@ Prevent issues like doing mathematical operations on String type variables.
 Is a bit difficult to use, because we need to memorize all types of variables before using them
 but can prevent Runtime exception, not checked during writing code.
 Eg. C++, Java, C
+
+## equals vs hashcode contract
+
+In Java, equals() defines when two objects mean "the same value", hashCode() produces an integer used to 
+quickly group objects in hash based collections such as HashMap and HashSet.
+
+The core contract is:
+1. If a.equals(b) is true, then a.hashCode() == b.hashCode() must also be true.
+2. If hash codes are equal, objects do not have to be equal - collisions are allowed.
+3. Both methods use the same fields.
+4. Fields used in equality should not change while an object is used as a HashMap key.
+
+Example:
+
+import java.util.Objects;
+
+public final class Person {
+  private final String id;
+  private final String name;
+
+  public Person(String id, String name) {
+    this.id = id;
+    this.name = name;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+
+    if (!(obj instanceOf Person other)) {
+      return false;
+    }
+
+    return Objects.equals(id, other.id) && Objects.equals(name, other.name);
+  } 
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, name);
+  }
+}
+
+Output:
+Map<Person, String> map = new HashMap<>();
+
+map.put(new Person("42", "Asha"), "Engineer");
+
+String role = map.get(new Person("42", "Asha"));
+// "Engineer"
+
+Internally, HashMap:
+1. Calls hashCode() on the lookup key to choose a bucket quickly.
+2. In that bucket, call equals() to find the exact matching key.
+
+If we override equals and not hashcode, two same objects will land in different buckets, and get() will fail.
+If we override hashcode and not equals, two same objects will land in same bucket, but will be counted as different.
+
+If a hashcode is a constant, all objects will land in same bucket.
+
+Eg. 
+class Person {
+    private final String id;
+
+    Person(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+}
+
+Person a = new Person("42");
+Person b = new Person("42");
+
+System.out.println(a.equals(b)); // false
+System.out.println(a.hashCode() == b.hashCode()); // true
+
+This does not violate the Java contract: unequal objects are allowed to have identical hash codes.
+
+Map<Person, String> map = new HashMap<>();
+map.put(a, "first");
+
+System.out.println(map.get(b)); // null
+
+
+If you override equals() but not hashCode(), two objects can be logically equal but have different default hash codes. This breaks lookups in HashMap and HashSet.
+
+class Person {
+    private final String id;
+
+    Person(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Person other)) return false;
+
+        return id.equals(other.id);
+    }
+
+    // hashCode() is NOT overridden
+}
+
+
+Person a = new Person("42");
+Person b = new Person("42");
+
+System.out.println(a.equals(b));                 // true
+System.out.println(a.hashCode() == b.hashCode()); // usually false
+
+
+HashMap first uses hashCode() to choose a bucket. Since a and b usually get different default hash codes, they go to different buckets; it never gets a chance to call equals().
+
+Map<Person, String> map = new HashMap<>();
+
+map.put(a, "Engineer");
+
+System.out.println(map.get(b)); // null — unexpected
+
+* Few important caveats:
+
+1. == compares references; equals() compares logical value.
+
+2. Use exactly the same meaningful fields in both methods. If equality uses id and name, hash code must use id and name too.
+
+3. Avoid mutable map keys. If a field contributing to equals()/hashCode() changes after insertion, the key can become effectively lost
+map.put(person, "value");
+person.setId("new-id");  // dangerous if id is used by hashCode()
+map.get(person);         // may return null
+
+4. Hash collisions are normal. Different objects can have the same hash code; HashMap then uses equals() to distinguish them.
+
+5. A hash code is not a unique ID and should not be persisted or used for security decisions. It may differ across JVM runs or implementations.
+
+6. For nullable fields, use Objects.equals():
+Objects.equals(this.email, other.email)
+
+7. For arrays, equals() is usually reference-based. Use Arrays.equals() or Arrays.deepEquals() instead.
+Arrays.equals(this.tags, other.tags)
+
+8. Inheritance requires care. The simplest safe approach is often making a value class final. Otherwise, subclasses adding equality fields can break symmetry.
+
+9. Java records generate sensible equals() and hashCode() automatically:
+record Person(String id, String name) {}
+
+10. HashSet follows the same rules as HashMap: it relies on hashCode() first, then equals().
+
+11. TreeMap and TreeSet are different: they use a Comparator or compareTo(), not hashCode(). Ideally, ordering should be consistent with equals().
+
+A good default for ordinary value objects is: 
+@Override
+public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (!(obj instanceof Person other)) return false;
+
+    return Objects.equals(id, other.id)
+        && Objects.equals(name, other.name);
+}
+
+@Override
+public int hashCode() {
+    return Objects.hash(id, name);
+}
+
+For a Person, decide first what “same person” means: same database id, or same id plus name. That business decision determines both methods.
+
