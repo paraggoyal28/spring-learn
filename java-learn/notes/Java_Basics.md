@@ -904,3 +904,266 @@ public int hashCode() {
 
 For a Person, decide first what “same person” means: same database id, or same id plus name. That business decision determines both methods.
 
+## Java Interview Sheet - Basic to Intermediate
+
+1. What is the difference b/w stack, heap, and method area.
+
+The stack is per thread and store method call frames, local primitive values, and object references.
+The heap is shared and stores objects and arrays. 
+The method area is a JVM specification concept for class-level metadata such as class structure, methods,
+and runtime constants; in modern Hotspot JVMs this is mainly implemented using Metaspace rather than PermGen.
+
+public class Demo {
+    static int count = 0;
+
+    void createUser() {
+        int age = 25;
+        User user = new User("Parag");
+    }
+}
+
+| Memory Area | Contains in the example | Shared ? |
+| ---- | ----- | ------ | 
+| Stack | age, the user reference, method call data | No - one stack per thread | 
+| Heap | The user ("Parag") object | Yes | 
+| Method Area/Metaspace | Metadata for Demo, User, methods, runtime constants | Yes | 
+
+**Important Details**
+1. static members belong to the class, not an object instance. Use them for shared constants, utlitiy methods,
+or factory methods - not mutable global state.
+
+2. Why equal() and hashCode() be overridden together ? 
+Equal objects should return same hash code. If they dont, HashMap and HashSet can behave incorrectly.
+
+3. ArrayList versus LinkedList 
+ArrayList usually default because it has fast indexed access and good memory locality. LinkedList is rarely used
+in backend code.
+
+4. HashMap versus LinkedHashMap vs TreeMap
+HashMap has no guaranteed iteration order.
+LinkedHashMap preserves insertion order.
+TreeMap keeps keys sorted using natural order or a comparator.
+
+5. How does HashMap work ? 
+It uses the key's hashCode() to find the bucket and equals() to find the exact key within that bucket. A key must not change in a way that affects equals() or hashCode() after insertion.
+
+6. What is the difference between Collections.unmodifiableList() and List.copyOf() ? 
+unmodifiableList() creates a read-only view of the original list, so later changes to the source are still 
+visible. List.copyOf() creates an immutable snapshot.
+
+7. What happens if we insert the same key twice into a HashMap ? 
+The previous value is replaced with the new value
+
+8. Why should equals() and hashCode() be overridden together ? 
+HashMap uses hashCode() to locate a bucket and then uses equals() to find the exact key inside that bucket. 
+Therefore, if two objects are equal according to equals(), they must return the same hash code. Otherwise,
+an equal lookup key may search a different bucket and fail to find the stored value.
+
+map.put(new Employee(101), "Parag");
+map.get(new Employee(101)); // must find "Parag"
+
+If equals() say both Employee(101) objects are equal, but their hashcodes differ, the lookup can fail.
+
+Also remember:
+1. Equal objects -> must have the same hash code.
+2. Same hash code -> objects don't have to be equal. Collisions are allowed.
+3. Don't mutate fields used by equals() or hashCode() after using an object as a HashMap key or HashSet item.
+
+9. What is the difference between `throw` and `throws`?
+throw actually raises an exception. throws declares that a method can pass an exception to its caller.
+
+10. Why use try-with-resources ? 
+It automatically closes resources such as files, streams and database connections, even when an exception occurs.
+
+11. How would you remove duplicate objects from a list ? 
+List<Employee> employees = List.of(e1, e2, e1, e3);
+
+List<Employee> uniqueEmployees = employees.stream()
+        .distinct()
+        .toList();
+
+12. What is the difference between checked and unchecked exceptions ? 
+
+Checked Exception
+Compiler forces the caller to either handle or declare them.
+Examples:
+IOException
+SQLException
+FileNotFoundException
+ParseException
+
+public String readFile(Path path) throws IOException {
+    return Files.readString(path);
+}
+
+Caller must handle or declare them
+try {
+    String content = readFile(path);
+} catch (IOException ex) {
+    // Retry, return an error response, or log the failure
+}
+
+Unchecked Exception
+These extend RuntimeException. The compiler does not force handling.
+Examples:
+NullPointerException
+IllegalArgumentException
+IllegalStateException
+IndexOutOfBoundsException
+NoSuchElementException
+
+public void updateQuantity(int quantity) {
+    if (quantity <= 0) {
+        throw new IllegalArgumentException("quantity must be positive");
+    }
+}
+
+A useful custom unchecked domain exception
+public class OrderNotFoundException extends RuntimeException {
+    public OrderNotFoundException(String orderId) {
+        super("Order not found: " + orderId);
+    }
+}
+
+Interview-safe rule:
+Use checked exceptions when the caller can reasonably recover, such as handling a file or database failure. Use unchecked exceptions for invalid input, invalid state, broken invariants, or programming mistakes.
+
+13. What are generics and why use them ? 
+
+Generics provide compile-time type safety, such as List<Order> instead of just List. They reduce costs and 
+prevent many runtime type errors.
+
+14. How to create an immutable class in Java ? 
+
+Create an immutable class using these rules:
+
+1. Make the class final so it cannot be subclassed.
+2. Keep all the fields private final.
+3. Set all values only in the constructor.
+4. Don't provide setters.
+5. Defensive copy mutable inputs such as lists, maps, arrays or Date.
+6. Never expose mutable internal objects directly.
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Objects;
+
+public final class EmployeeProfile {
+    private final String id;
+    private final String name;
+    private final List<String> skills;
+    private final Instant createdAt;
+
+    public EmployeeProfile(
+            String id,
+            String name,
+            List<String> skills,
+            Instant createdAt) {
+
+        this.id = Objects.requireNonNull(id);
+        this.name = Objects.requireNonNull(name);
+        this.skills = List.copyOf(Objects.requireNonNull(skills));
+        this.createdAt = Objects.requireNonNull(createdAt);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<String> getSkills() {
+        return skills;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+}
+
+List<String> skills = new ArrayList<>(List.of("Java"));
+
+EmployeeProfile employee =
+        new EmployeeProfile("101", "Parag", skills, Instant.now());
+
+skills.add("Spring Boot");
+
+System.out.println(employee.getSkills()); // [Java]
+
+
+List.copyOf() creates an immutable copy, so changes to the original list don't affect the object.
+For an array, copy it in both constructor and getter.
+
+public final class ApiToken {
+    private final byte[] value;
+
+    public ApiToken(byte[] value) {
+        this.value = value.clone();
+    }
+
+    public byte[] getValue() {
+        return value.clone();
+    }
+}
+
+Interview answer:
+I will make the class final, fields private and final, initialize everything in the constructor, expose
+no setters, and use defensive copies for mutable fields. This prevents state from changing after object 
+creation.
+
+15. Composition Vs Inheritance. Which one to prefer ? 
+
+Prefer composition by default because it keeps coupling low and makes behaviour easier to change. Use 
+inheritance only for a stable, genuine "is-a" relationship.
+
+16. What are Java access modifiers ? 
+
+public is visible everywhere.
+protected is visible to package and subclasses.
+package-private is visible inside the package
+private is visible only inside the class.
+
+17. What really happens when we write new User() ? 
+Most Java developers can write clean code. Fewer can explain what the JVM actually does the moment the code runs.
+That gap is usually what separates "I know Java" from "I can debug Java applications".
+Two homes for your data: Heap and Stack
+Every JVM thread gets its own stack - a workspace for local variables and method calls. When a method finishes, 
+its stack frame disappears, no cleanup requested.
+Objects, on the other hand, live on the heap - a shared memory space every thread can see. This is where new 
+actually allocates memory, and its part the Garbage Collector watches.
+
+* Not all objects are created equal: Young Vs Old Generation
+Here's the insight that changes how you think about performance: most objects die young.
+A request comes in, gets turned into a DTO, validated, mapped to an entity, serialized into a response - and 
+almost everything created along the way is garbage within seconds.
+The JVM exploits this. New objects go into the Young Generation (specifially in an area called Eden Space). 
+If they survive a collection cycle, they get promoted to survivor space, and if they keep surviving, they 
+eventually graduate to the Old Generation.
+This is why minor GC pauses (cleaning Young Generation) are usually fast and frequent, while major GC 
+pauses (cleaning old generation) are rarer but heavier. 
+The "Unreachable" Myth
+A lot of developers assumes this frees memory immediately.
+user=null;
+It doesn't. All it does is remove the reference. The object still sits in memory, now unreachable,
+waiting for GC to notice and reclaim it on its own schedule. 
+Reachability - not nullness - is the actual concept the Garbage Collector cares about.
+So what Garbage Collection Actually do ? 
+At a high level:
+Find objects nothing points to anymore. Reclaim their memory. Compact what's left so allocation stays 
+fast.
+
+### Where OutOfMemoryError Actually Comes From
+OutOfMemoryError: Java heap space doesn't mean "not enough RAM". It means the JVM found live, reachable 
+objects that filled the heap and couldn't be evicted. Two common causes:
+1. Unbounded collections List<byte[]> data = new ArrayList<>(); 
+while(true) {
+  data.add(new byte[1024*1024]);
+}
+This list keeps a reference to everything, so nothing is ever eligible for collection.
+
+2. Accidental caches static List<Object> cache = new ArrayList<>(). A static field that only grows and 
+
+
+
