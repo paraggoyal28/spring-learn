@@ -1134,36 +1134,134 @@ its stack frame disappears, no cleanup requested.
 Objects, on the other hand, live on the heap - a shared memory space every thread can see. This is where new 
 actually allocates memory, and its part the Garbage Collector watches.
 
-* Not all objects are created equal: Young Vs Old Generation
-Here's the insight that changes how you think about performance: most objects die young.
-A request comes in, gets turned into a DTO, validated, mapped to an entity, serialized into a response - and 
-almost everything created along the way is garbage within seconds.
-The JVM exploits this. New objects go into the Young Generation (specifially in an area called Eden Space). 
-If they survive a collection cycle, they get promoted to survivor space, and if they keep surviving, they 
-eventually graduate to the Old Generation.
-This is why minor GC pauses (cleaning Young Generation) are usually fast and frequent, while major GC 
-pauses (cleaning old generation) are rarer but heavier. 
-The "Unreachable" Myth
-A lot of developers assumes this frees memory immediately.
-user=null;
-It doesn't. All it does is remove the reference. The object still sits in memory, now unreachable,
-waiting for GC to notice and reclaim it on its own schedule. 
-Reachability - not nullness - is the actual concept the Garbage Collector cares about.
-So what Garbage Collection Actually do ? 
-At a high level:
-Find objects nothing points to anymore. Reclaim their memory. Compact what's left so allocation stays 
-fast.
+18. First Non-Repeating Character
+Find first character whose frequency is 1
 
-### Where OutOfMemoryError Actually Comes From
-OutOfMemoryError: Java heap space doesn't mean "not enough RAM". It means the JVM found live, reachable 
-objects that filled the heap and couldn't be evicted. Two common causes:
-1. Unbounded collections List<byte[]> data = new ArrayList<>(); 
-while(true) {
-  data.add(new byte[1024*1024]);
+
+public char findFirstNonRepeating(String s) {
+  String s = "swiss";
+
+  for (char ch: s.toCharArray()) {
+    if (s.indexOf(ch) == s.lastIndexOf(ch)) {
+      return ch;
+    }
+  }
+
+  return -1;
 }
-This list keeps a reference to everything, so nothing is ever eligible for collection.
 
-2. Accidental caches static List<Object> cache = new ArrayList<>(). A static field that only grows and 
+19. Find Duplicate characters
 
+Find characters appearing more than once.
 
+public List<Character> findReoccuringCharacters(String s) {
+  Set<Character> seen = new HashSet<>();
+  List<Character> reoccuringChars = new ArrayList<>();
+  for (char ch: s.toCharArray()) {
+    // if already seen
+    if (!seen.add(ch)) {
+      reoccuringChars.add(ch);
+    }
+  }
+
+  return reoccuringChars;
+}
+
+20. Remove Duplicates
+
+public String duplicatesRemoved(String s) {
+  StringBuilder withoutDuplicates = new StringBuilder();
+
+  Set<Character> seen = new HashSet<>();
+
+  for (char ch: s.toCharArray()) {
+    if (seen.add(ch)) {
+      withoutDuplicates.append(ch);
+    }
+  }
+
+  return withoutDuplicates.toString();
+}
+
+21. Reverse Words
+
+// Java is a programming language
+// language programming a is Java
+
+public String reverseWords(String input) {
+  String[] splitted = input.split(" ");
+  StringBuilder result = new StringBuilder();
+  
+  for (int i = splitted.length - 1; i >= 0; --i) {
+    result.append(splitted[i]).append(" ");
+  }
+
+  return result.toString().trim();
+}
+
+22. Longest Substring without repeating characters
+
+public int longestSubstringWithoutRepeatingCharacters(String s) {
+
+  Set<Character> seen = new HashSet<>();
+
+  int maxLen = 0;
+  int left = 0;
+  for (int right = 0, n = s.length(); right < n; ++right) {
+
+    if (seen.contains(s.charAt(right))) {
+      seen.remove(s.charAt(left++));
+    }
+
+    seen.add(s.charAt(right));
+
+    maxLen = Math.max(maxLen, right - left + 1);
+  }
+
+  return maxLen;
+}
+
+23. String Compression
+
+aaabbc -> a3b2c1
+
+public String compressedString(String input) {
+  StringBuilder ans = new StringBuilder();
+
+  int count = 1;
+
+  for (int i = 1, n = s.length(); i <= n; ++i) {
+    if (i < n && s.charAt(i) == s.charAt(i-1)) {
+      count++;
+    } else {
+      ans.append(s.charAt(i-1)).append(count);
+      count = 1;
+    }
+  }
+
+  return ans.toString();
+}
+
+For the above code if we look into with edge cases 
+
+public String compressStrng(String input) {
+  if (input == null || input.length() == 0) return input;
+
+  StringBuilder ans = new StringBuilder();
+  int count = 1;
+  int n = input.length();
+
+  for (int i = 1; i < n; ++i) {
+    if (input.charAt(i-1) == input.charAt(i)) {
+      count++;
+    } else {
+      ans.append(input.charAt(i-1)).append(count);
+      count = 1;
+    }
+  }
+
+  ans.append(input.charAt(n-1)).append(count);
+
+  return ans.length() < n ? ans.toString() : input;
+}
 
