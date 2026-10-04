@@ -1,0 +1,3 @@
+This is input to autoclosing resources demo class.
+This is just for demo purposes.
+User will read the data and print it in the console.
