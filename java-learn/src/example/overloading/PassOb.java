@@ -1,24 +1,25 @@
 package example.overloading;
 
-class Test {
+class TestDemo {
     int a, b;
 
-    Test(int a, int b) {
+    TestDemo(int a, int b) {
         this.a = a;
         this.b = b;
     }
 
-    boolean equals(Test test) {
-        if (this.a == test.a && this.b == test.b) return true;
-        else return false;
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (!(obj instanceof TestDemo testDemoObj)) return false;
+        return a == testDemoObj.a && b == testDemoObj.b;
     }
 }
 
 public class PassOb {
     public static void main(String args[]) {
-        Test ob1 = new Test(100, 22);
-        Test ob2 = new Test(100, 22);
-        Test ob3 = new Test(-1, -1);
+        TestDemo ob1 = new TestDemo(100, 22);
+        TestDemo ob2 = new TestDemo(100, 22);
+        TestDemo ob3 = new TestDemo(-1, -1);
 
         System.out.println("ob1 == ob2: " + ob1.equals(ob2));
         System.out.println("ob1 == ob3: " + ob1.equals(ob3));

@@ -1,11 +1,11 @@
 package example.Multithreading;
 
-class NewThread implements Runnable {
+class NewThreadV implements Runnable {
     String name; // name of thread
     Thread t;
     boolean suspendFlag;
 
-    NewThread(String threadName) {
+    NewThreadV(String threadName) {
         this.name = threadName;
         t = new Thread(this, name);
         System.out.println("New Thread: " + t);
@@ -48,15 +48,15 @@ public class SuspendResumeNew {
 
         try {
             Thread.sleep(1000);
-            obj1.mySuspend();
+          //  obj1.mySuspend();
             System.out.println("Suspending Thread One");
             Thread.sleep(1000);
-            obj1.myResume();
+          //  obj1.myResume();
             System.out.println("Resuming Thread One");
-            obj2.mySuspend();
+         //   obj2.mySuspend();
             System.out.println("Suspending Thread Two");
             Thread.sleep(1000);
-            obj2.myResume();
+         //   obj2.myResume();
             System.out.println("Resuming Thread Two");
         }  catch (InterruptedException e) {
             System.out.println("Main Thread Interrupted");

@@ -34,15 +34,6 @@ class Triangle extends Figure {
     }
 }
 
-class A {
-    int age;
-}
-
-class B extends A {
-    void print() {
-        System.out.println(age);
-    }
-}
 
 
 class AbstractAreas {
@@ -59,7 +50,5 @@ class AbstractAreas {
         figRef = t;
         System.out.println("Area is: " + figRef.area());
 
-        B b  = new B();
-        b.print();
     }
 }

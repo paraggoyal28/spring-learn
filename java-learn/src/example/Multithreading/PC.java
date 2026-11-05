@@ -1,7 +1,7 @@
 package example.Multithreading;
 
 
-class Q {
+class Queue {
     int n;
 
     synchronized int get() {
@@ -14,10 +14,10 @@ class Q {
         System.out.println("Put: " + n);
     }
 }
-class Producer implements Runnable {
-    Q q;
+class ProducerWithQ implements Runnable {
+    Queue q;
 
-    Producer(Q q) {
+    ProducerWithQ(Queue q) {
         this.q = q;
         new Thread(this, "Producer").start();
     }
@@ -31,10 +31,10 @@ class Producer implements Runnable {
     }
 }
 
-class Consumer implements Runnable {
-    Q q;
+class ConsumerWithQ implements Runnable {
+    Queue q;
 
-    Consumer(Q q) {
+    ConsumerWithQ(Queue q) {
         this.q = q;
         new Thread(this, "Consumer").start();
     }
@@ -49,10 +49,10 @@ class Consumer implements Runnable {
 
 class PC  {
     public static void main(String[] args) {
-        Q q  = new Q();
+        Queue q  = new Queue();
 
-        new Producer(q);
-        new Consumer(q);
+        new ProducerWithQ(q);
+        new ConsumerWithQ(q);
         System.out.println("Press Control + C to stop\n");
     }
 }

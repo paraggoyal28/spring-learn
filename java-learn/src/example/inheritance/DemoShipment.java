@@ -1,31 +1,31 @@
 package example.inheritance;
 
 
-class Box {
+class BoxW {
     private double width;
     private double height;
     private double depth;
 
     // Construct clone of an object
-    Box(Box ob) {
+    BoxW(BoxW ob) {
         width = ob.width;
         height = ob.height;
         depth = ob.depth;
     }
 
-    Box(double w, double h, double d) {
+    BoxW(double w, double h, double d) {
         width = w;
         height = h;
         depth = d;
     }
 
-    Box() {
+    BoxW() {
         width = -1;
         height = -1;
         depth = -1;
     }
 
-    Box(double len) {
+    BoxW(double len) {
         width = height = depth = len;
     }
 
@@ -35,31 +35,31 @@ class Box {
 }
 
 // add weight
-class BoxWeight extends Box {
+class BoxWWeight extends BoxW {
     double weight;
 
-    BoxWeight(BoxWeight ob) {
+    BoxWWeight(BoxWWeight ob) {
         super(ob);
         weight = ob.weight;
     }
 
-    BoxWeight(double w, double h, double d, double weight) {
+    BoxWWeight(double w, double h, double d, double weight) {
         super(w, h, d);
         this.weight = weight;
     }
 
-    BoxWeight() {
+    BoxWWeight() {
         super();
         weight = -1;
     }
 
-    BoxWeight(double len, double m) {
+    BoxWWeight(double len, double m) {
         super(len);
         weight = m;
     }
 }
 
-class Shipment extends BoxWeight {
+class Shipment extends BoxWWeight {
     double cost;
 
     Shipment(Shipment obj) {

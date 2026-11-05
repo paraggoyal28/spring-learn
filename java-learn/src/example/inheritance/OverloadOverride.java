@@ -1,9 +1,9 @@
 package example.inheritance;
 
-class A {
+class AO {
     int i, j;
 
-    A(int a, int b) {
+    AO(int a, int b) {
         this.i = a;
         this.j = b;
     }
@@ -14,10 +14,10 @@ class A {
     }
 }
 
-class B extends A {
+class BO extends AO {
     int k;
 
-    B(int a, int b, int c) {
+    BO(int a, int b, int c) {
         super(a, b);
         this.k = c;
     }
@@ -30,7 +30,7 @@ class B extends A {
 
 public class OverloadOverride {
     public static void main(String[] args) {
-        B subOb = new B(1, 2, 3);
+        BO subOb = new BO(1, 2, 3);
 
         subOb.show("This is k: "); // this calls show() in B
         subOb.show(); // this calls show() in A  

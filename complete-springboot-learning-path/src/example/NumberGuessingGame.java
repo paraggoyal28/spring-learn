@@ -7,6 +7,5 @@ public class NumberGuessingGame {
         Scanner sc = new Scanner(System.in);
 
         // Generate a random number between 1 and 10
-        int number =
     }
 }

@@ -1,23 +1,23 @@
 package example.overloading;
 
-class Box {
+class BoxV {
     double width;
     double height;
     double depth;
 
-    Box(double w, double h, double d) {
+    BoxV(double w, double h, double d) {
         width = w;
         height = h;
         depth = d;
     }
 
-    Box() {
+    BoxV() {
         width = -1;
         height = -1;
         depth = -1;
     }
 
-    Box(double len) {
+    BoxV(double len) {
         width = height = depth = len;
     }
 
@@ -28,9 +28,9 @@ class Box {
 
 public class BoxDemo {
     public static void main(String args[]) {
-        Box mybox1 = new Box(10, 20, 30);
-        Box mybox2 = new Box();
-        Box mybox3 = new Box(7);
+        BoxV mybox1 = new BoxV(10, 20, 30);
+        BoxV mybox2 = new BoxV();
+        BoxV mybox3 = new BoxV(7);
 
         double vol;
         vol = mybox1.volume();

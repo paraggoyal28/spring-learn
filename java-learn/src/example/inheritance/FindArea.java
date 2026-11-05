@@ -1,10 +1,10 @@
 package example.inheritance;
 
-class Figure {
+class FigureAbc {
     double dim1;
     double dim2;
 
-    Figure(double a, double b) {
+    FigureAbc(double a, double b) {
         dim1 = a;
         dim2 = b;
     }
@@ -16,8 +16,8 @@ class Figure {
 }
 
 
-class Rectangle extends Figure {
-    Rectangle(double a, double b) {
+class RectangleAbc extends FigureAbc {
+    RectangleAbc(double a, double b) {
         super(a, b);
     }
 
@@ -27,8 +27,8 @@ class Rectangle extends Figure {
     }
 }
 
-class Triangle extends Figure {
-    Triangle(double a, double b) {
+class TriangleAbc extends FigureAbc {
+    TriangleAbc(double a, double b) {
         super(a, b);
     }
 
@@ -41,11 +41,11 @@ class Triangle extends Figure {
 
 public class FindArea {
     public static void main(String[] args) {
-        Figure f = new Figure(10, 10);
-        Rectangle r = new Rectangle(9, 5);
-        Triangle t = new Triangle(10, 8);
+        FigureAbc f = new FigureAbc(10, 10);
+        RectangleAbc r = new RectangleAbc(9, 5);
+        TriangleAbc t = new TriangleAbc(10, 8);
 
-        Figure figref;
+        FigureAbc figref;
 
         figref = r;
         System.out.println("Area is: " + figref.area());

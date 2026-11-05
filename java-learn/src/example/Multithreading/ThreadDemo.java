@@ -1,9 +1,9 @@
 package example.Multithreading;
 
-class NewThread implements Runnable {
+class NewThreadDemo implements Runnable {
     Thread t;
 
-    NewThread() {
+    NewThreadDemo() {
         // create a new second thread
         t = new Thread(this, "Demo Thread");
         System.out.println("Child Thread: " + t);
@@ -26,7 +26,7 @@ class NewThread implements Runnable {
 
 public class ThreadDemo {
     public static void main(String[] args) {
-        new NewThread(); // create a new thread
+        new NewThreadDemo(); // create a new thread
 
         try {
             for (int i = 0; i < 5; ++i) {

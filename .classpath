@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="basic_hiberante_app/src/main/java"/>
+	<classpathentry kind="src" path="basic_hiberante_app/src/test/java"/>
+	<classpathentry kind="src" path="CacheManager/src/main/java"/>
+	<classpathentry kind="src" path="CacheManager/src/test/java"/>
+	<classpathentry excluding="example/|example/initializerBlocks/" kind="src" path="complete-springboot-learning-path/src"/>
+	<classpathentry excluding="initializerBlocks/" kind="src" path="complete-springboot-learning-path/src/example"/>
+	<classpathentry kind="src" path="complete-springboot-learning-path/src/example/initializerBlocks"/>
+	<classpathentry kind="src" path="demo/src/main/java"/>
+	<classpathentry kind="src" path="demo/src/test/java"/>
+	<classpathentry excluding="example/newFeatures/|example/overloading/|example/Interface/" kind="src" path="java-learn/src"/>
+	<classpathentry kind="src" path="java-learn/src/example/Interface"/>
+	<classpathentry kind="src" path="java-learn/src/example/newFeatures"/>
+	<classpathentry kind="src" path="java-learn/src/example/overloading"/>
+	<classpathentry kind="src" path="LibraryManagementSystem/src/main/java"/>
+	<classpathentry kind="src" path="LibraryManagementSystem/src/test/java"/>
+	<classpathentry kind="src" path="LoginTracker/src/main/java"/>
+	<classpathentry kind="src" path="LoginTracker/src/test/java"/>
+	<classpathentry kind="src" path="microservice-architecture/src/main/java"/>
+	<classpathentry kind="src" path="microservice-architecture/src/test/java"/>
+	<classpathentry kind="src" path="MiniBankingApp/src/main/java"/>
+	<classpathentry kind="src" path="RateLimiter/src/main/java"/>
+	<classpathentry kind="src" path="RateLimiter/src/test/java"/>
+	<classpathentry kind="src" path="ServeXMLJSON/src/main/java"/>
+	<classpathentry kind="src" path="ServeXMLJSON/src/test/java"/>
+	<classpathentry kind="src" path="SpringSecurityProject/src/main/java"/>
+	<classpathentry kind="src" path="SpringSecurityProject/src/test/java"/>
+	<classpathentry kind="lib" path="basic_hiberante_app/target/basic_hiberante_app-0.0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="SpringSecurityProject/gradle/wrapper/gradle-wrapper.jar"/>
+	<classpathentry kind="output" path="CacheManager/target/classes"/>
+</classpath>

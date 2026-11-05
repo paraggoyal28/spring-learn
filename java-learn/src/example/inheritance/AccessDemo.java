@@ -2,7 +2,7 @@ package example.inheritance;
 
 
 // Create a superclass
-class A {
+class AA {
     int i;
     private int j;
 
@@ -12,7 +12,7 @@ class A {
     }
 }
 
-class B extends A {
+class BA extends AA {
     int total;
 
     void sum() {
@@ -24,7 +24,7 @@ class B extends A {
 
 public class AccessDemo {
     public static void main(String[] args) {
-        B subObj = new B();
+        BA subObj = new BA();
         subObj.setij(10, 20);
         subObj.sum();
         System.out.println("Total is: " + subObj.total);

@@ -1,19 +1,19 @@
 package example.inheritance;
 
 
-class A {
+class AD {
     void callme() {
         System.out.println("Inside A's callme method");
     }
 }
 
-class B extends A {
+class BD extends AD {
     void callme() {
         System.out.println("Inside B's callme method");
     }
 }
 
-class C extends B {
+class CD extends BD {
     void callme() {
         System.out.println("Inside C's callme method");
     }
@@ -21,11 +21,11 @@ class C extends B {
 
 public class Dispatch {
     public static void main(String[] args) {
-        A a = new A();
-        B b = new B();
-        C c = new C();
+        AD a = new AD();
+        BD b = new BD();
+        CD c = new CD();
 
-        A r;
+        AD r;
 
         r = a;
         r.callme(); 

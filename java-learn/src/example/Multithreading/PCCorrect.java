@@ -1,6 +1,6 @@
 package example.Multithreading;
 
-class Q {
+class QueuePC {
     int n;
     boolean valueSet = false;
 
@@ -9,7 +9,7 @@ class Q {
             try {
                 wait();
             } catch (InterruptedException e) {
-                System.out.println("Consumer Interrupted");
+                System.out.println("ConsumerWithQueuePC Interrupted");
             }
         }
 
@@ -35,17 +35,17 @@ class Q {
     }
 }
 
-class Producer implements Runnable {
-    Q q;
-    Producer(Q q) {
-        this.q = q;
+class ProducerWithQueuePC implements Runnable {
+    QueuePC QueuePC;
+    ProducerWithQueuePC(QueuePC QueuePC) {
+        this.QueuePC = QueuePC;
         new Thread(this, "Producer").start();
     }
 
     public void run() {
         int i = 0;
         while (true) {
-            q.put(i++);
+            QueuePC.put(i++);
             if (i == 6) {
                 break;
             }
@@ -53,16 +53,16 @@ class Producer implements Runnable {
     }
 }
 
-class Consumer implements Runnable {
-    Q q;
-    Consumer(Q  q) {
-        this.q = q;
-        new Thread(this, "Consumer").start();
+class ConsumerWithQueuePC implements Runnable {
+    QueuePC QueuePC;
+    ConsumerWithQueuePC(QueuePC  QueuePC) {
+        this.QueuePC = QueuePC;
+        new Thread(this, "ConsumerWithQueuePC").start();
     }
 
     public void run() {
         while (true) {
-            q.get();
+            QueuePC.get();
         }
     }
 }
@@ -70,8 +70,8 @@ class Consumer implements Runnable {
 
 public class PCCorrect {
     public static void main(String[] args) {
-        Q q  = new Q();
-        new Producer(q);
-        new Consumer(q);
+        QueuePC QueuePC  = new QueuePC();
+        new ProducerWithQueuePC(QueuePC);
+        new ConsumerWithQueuePC(QueuePC);
     }
 }

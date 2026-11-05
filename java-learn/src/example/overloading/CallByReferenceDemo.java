@@ -1,15 +1,15 @@
 package example.overloading;
 
 
-class Test {
+class TestAbc {
     int a, b;
 
-    Test(int a, int b) {
+    TestAbc(int a, int b) {
         this.a = a;
         this.b = b;
     }
 
-    void math(Test ob) {
+    void math(TestAbc ob) {
         this.a *= 2;
         this.b /= 2;
     }
@@ -17,7 +17,7 @@ class Test {
 
 public class CallByReferenceDemo {
     public static void main(String[] args) {
-        Test ob = new Test(15, 20);
+        TestAbc ob = new TestAbc(15, 20);
 
         System.out.println("ob.a and ob.b before call: " + ob.a + " " + ob.b);
 

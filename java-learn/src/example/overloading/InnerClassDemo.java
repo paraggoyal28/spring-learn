@@ -1,6 +1,6 @@
 package example.overloading;
 
-class Outer {
+class OuterNonStatic {
     int outer_x = 100;
 
     void test() {
@@ -19,7 +19,7 @@ class Outer {
 
 public class InnerClassDemo {
     public static void main(String[] args) {
-        Outer outer = new Outer();
+        OuterNonStatic outer = new OuterNonStatic();
         outer.test();
     }    
 }
